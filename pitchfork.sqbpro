@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/alastairthomson/Downloads/database.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2066"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,7:mainreviews"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="artists" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="60"/><column index="2" value="221"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="content" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="64"/><column index="2" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="genres" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="60"/><column index="2" value="86"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="labels" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="60"/><column index="2" value="209"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="reviews" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="60"/><column index="2" value="300"/><column index="3" value="300"/><column index="4" value="300"/><column index="5" value="43"/><column index="6" value="112"/><column index="7" value="174"/><column index="8" value="153"/><column index="9" value="78"/><column index="10" value="94"/><column index="11" value="62"/><column index="12" value="79"/><column index="13" value="66"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="years" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="60"/><column index="2" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">SELECT * 
+FROM years
+ORDER by year DESC
+
+-- What were the 10 highest rated reviews in 2017?
+
+SELECT reviews.reviewid, title, artist, score, pub_date, content
+FROM reviews
+JOIN content 
+	ON content.reviewid = reviews.reviewid
+WHERE pub_year = 2017
+ORDER BY score DESC;
+
+-- Which day of the week is most popular for a review?
+SELECT DayOfWeek, COUNT(*) as Count
+FROM review_day_of_week
+GROUP BY DayOfWeek
+ORDER BY 2 DESC;
+
+
+-- Which day of the week recieves the highest average review?
+CREATE VIEW review_day_of_week AS 
+SELECT pub_weekday, 
+CASE WHEN pub_weekday = 0 THEN 'Monday'
+	WHEN pub_weekday = 1 THEN 'Tuesday'
+	WHEN pub_weekday = 2 THEN 'Wednesday'
+	WHEN pub_weekday = 3 THEN 'Thursday'
+	WHEN pub_weekday = 4 THEN 'Friday'
+	WHEN pub_weekday = 5 THEN 'Saturday'
+	WHEN pub_weekday = 6 THEN 'Sunday'
+	END AS 'DayOfWeek',
+	score,
+	title, 
+	artist,
+	reviewid
+FROM reviews;
+
+SELECT DayOfWeek, AVG(score)
+FROM review_day_of_week
+GROUP BY DayOfWeek
+ORDER BY 2 DESC;
+
+
+
+-- Which genre recieves the highest average review?
+
+SELECT genre, AVG(score)
+FROM reviews
+JOIN genres	
+	ON genres.reviewid = reviews.reviewid
+WHERE genre IS NOT NULL
+GROUP BY genre
+ORDER BY 2 DESC
+
+-- What is the highest review score by label?
+
+SELECT label, MAX(score)
+FROM reviews
+JOIN labels 
+ ON labels.reviewid = reviews.reviewid
+GROUP BY 1
+ORDER BY 2 DESC
+
+SELECT title, artist
+FROM reviews
+GROUP BY title, artist
+
+-- Which author type publishes the most reviews?
+
+SELECT author_type, COUNT(*) as 'Number of reviews'
+FROM reviews
+WHERE author_type IS NOT NULL
+GROUP BY author_type
+ORDER BY 2 DESC
+
+
+
+
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
